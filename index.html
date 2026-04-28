@@ -897,7 +897,8 @@ function onDrop(e,sid) {
 function openEdit(id) {
   const c = candidates.find(x=>x.id===id); if(!c) return;
   editingId = id;
-  document.getElementById('editTitle').textContent = (c.nameEN||c.nameCN||'編輯')+(c.pool==='TW MBB Pool'?' · TW':' · 海外');
+  const poolLabel = c.pool==='TW MBB Pool' ? ' · TW' : c.pool==='Hi-Po Pool' ? ' · Hi-Po' : ' · 海外';
+  document.getElementById('editTitle').textContent = (c.nameEN||c.nameCN||'編輯') + poolLabel;
   document.getElementById('eStage').value    = c.stage||'Sourced';
   document.getElementById('eNote').value     = c.notes||'';
   document.getElementById('eContact').value  = c.contactLog||'';
