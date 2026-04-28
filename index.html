@@ -615,37 +615,46 @@ async function loadSheet(sheetName) {
     `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(sheetName+'!A'+dataStartRow+':AC')}`,
     { headers: { Authorization: 'Bearer ' + accessToken } }).then(r => r.json());
   if (d.error) throw new Error(d.error.message);
+
+  // Hi-Po Pool 的欄位與其他頁簽不同，stage 在 T 欄（index 19）
+  const isHiPo = sheetName === 'Hi-Po Pool';
+  const col = isHiPo ? { ...COL, stage: 19 } : COL;
+
   return (d.values || []).map((row, i) => {
     const g = j => (row[j] || '').trim();
-    const sr = g(COL.stage);
+    const sr = g(col.stage);
     return {
       pool:           sheetName,
       rowIndex:       dataStartRow + i,
       id:             sheetName + '_' + (i + 1),
-      company:        g(COL.company),   jobTitle:       g(COL.jobTitle),
-      nameCN:         g(COL.nameCN),    nameEN:         g(COL.nameEN),
-      age:            g(COL.age),       linkedin:       g(COL.linkedin),
-      isShopee:       g(COL.isShopee),  notes:          g(COL.notes),
-      contactLog:     g(COL.contactLog),taType:         g(COL.taType),
-      currentCompany: g(COL.currentCompany) || g(COL.company),
+      company:        g(col.company),    jobTitle:       g(col.jobTitle),
+      nameCN:         g(col.nameCN),     nameEN:         g(col.nameEN),
+      age:            g(col.age),        linkedin:       g(col.linkedin),
+      isShopee:       g(col.isShopee),   notes:          g(col.notes),
+      contactLog:     g(col.contactLog), taType:         g(col.taType),
+      currentCompany: g(col.currentCompany) || g(col.company),
       stage:          VALID_STAGES.includes(sr) ? sr : 'Sourced',
-      coldCallDate:   g(COL.coldCallDate), preference: g(COL.preference),
-      hrFeedback:     g(COL.hrFeedback),   hmFeedback: g(COL.hmFeedback),
+      coldCallDate:   g(col.coldCallDate), preference: g(col.preference),
+      hrFeedback:     g(col.hrFeedback),   hmFeedback: g(col.hmFeedback),
     };
   }).filter(c => c.nameCN || c.nameEN);
 }
-
 // ── WRITE ──
 async function writeRow(c) {
   if (!accessToken || !sheetId) return;
+  const colMap = c.pool === 'Hi-Po Pool' ? { ...COL, stage: 19, coldCallDate: 20, hrFeedback: 21, hmFeedback: 22 } : COL;
   setPill('loading', '同步中...');
   try {
     const cl = n => { let s=''; n++; while(n>0){s=String.fromCharCode(65+(n-1)%26)+s;n=Math.floor((n-1)/26);} return s; };
     const data = [
-      {col:COL.stage,val:c.stage},{col:COL.notes,val:c.notes},{col:COL.contactLog,val:c.contactLog},
-      {col:COL.hrFeedback,val:c.hrFeedback},{col:COL.hmFeedback,val:c.hmFeedback},
-      {col:COL.preference,val:c.preference},{col:COL.coldCallDate,val:c.coldCallDate},
-    ].map(u => ({ range:`${c.pool}!${cl(u.col)}${c.rowIndex}`, values:[[u.val||'']] }));
+      {c:colMap.stage,       v:c.stage},
+      {c:colMap.notes,       v:c.notes},
+      {c:colMap.contactLog,  v:c.contactLog},
+      {c:colMap.hrFeedback,  v:c.hrFeedback},
+      {c:colMap.hmFeedback,  v:c.hmFeedback},
+      {c:colMap.preference,  v:c.preference},
+      {c:colMap.coldCallDate,v:c.coldCallDate},
+    ].map(u => ({ range:`${c.pool}!${cl(u.c)}${c.rowIndex}`, values:[[u.v||'']] }));
     const d = await fetch(
       `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values:batchUpdate`,
       { method:'POST', headers:{Authorization:'Bearer '+accessToken,'Content-Type':'application/json'},
