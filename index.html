@@ -745,7 +745,9 @@ function cardHTML(c) {
       ${ta==='mbb'        ? `<span class="badge b-mbb">MBB</span>` : ''}
       ${ta==='ex-mbb'     ? `<span class="badge b-exmbb">ex-MBB</span>` : ''}
       ${ta==='hi-po'      ? `<span class="badge b-hipo">Hi-Po</span>` : ''}
-      ${c.pool==='TW MBB Pool' ? `<span class="badge b-tw">TW</span>` : `<span class="badge b-os">海外</span>`}
+      ${c.pool==='TW MBB Pool'      ? `<span class="badge b-tw">TW</span>`      : ''}
+      ${c.pool==='Overseas MBB Pool'? `<span class="badge b-os">海外</span>`    : ''}
+      ${c.pool==='Hi-Po Pool'       ? `<span class="badge b-hipo">Hi-Po</span>` : ''}
       ${hasLI             ? `<a class="badge b-li" href="${c.linkedin}" target="_blank">LinkedIn</a>` : ''}
       ${isExS             ? `<span class="badge b-sh">Ex-Shopee</span>` : ''}
     </div>
