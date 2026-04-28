@@ -143,6 +143,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',
 .b-exmbb { background:#EEEDFE; color:#534AB7; border-color:#7F77DD; }
 .b-tw    { background:#E6F1FB; color:#185FA5; border-color:#378ADD; }
 .b-os    { background:#FAECE7; color:#712B13; border-color:#D85A30; }
+.b-hipo { background:#FDE8F5; color:#7B1260; border-color:#D670B8; }
 .cnote   { font-size:10px; color:var(--text2); background:var(--bg2); border-radius:4px; padding:4px 6px; margin-bottom:5px; line-height:1.5; }
 .cact    { display:flex; gap:4px; }
 .cbtn    { font-size:10px; padding:2px 7px; border-radius:var(--radius); border:0.5px solid var(--border2); background:transparent; color:var(--text2); cursor:pointer; font-family:inherit; }
@@ -285,6 +286,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',
       <div class="pool-tab active" onclick="setPool('all')"              id="tab-all">全部</div>
       <div class="pool-tab"        onclick="setPool('TW MBB Pool')"      id="tab-tw">TW MBB Pool</div>
       <div class="pool-tab"        onclick="setPool('Overseas MBB Pool')" id="tab-os">Overseas MBB Pool</div>
+      <div class="pool-tab" onclick="setPool('Hi-Po Pool')" id="tab-hipo">Hi-Po Pool</div>
     </div>
 
     <div class="filter-bar">
@@ -295,6 +297,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',
         <option value="">全部</option>
         <option value="MBB">MBB</option>
         <option value="ex-MBB">ex-MBB</option>
+        <option value="Hi-Po">Hi-Po</option>
       </select>
       <span class="fl">Shopee</span>
       <select id="shopeeFilter" onchange="render()">
@@ -412,6 +415,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',
         <select id="aPool">
           <option value="TW MBB Pool">TW MBB Pool</option>
           <option value="Overseas MBB Pool">Overseas MBB Pool</option>
+          <option value="Hi-Po">Hi-Po</option>
         </select>
       </div>
     </div>
@@ -421,6 +425,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',
           <option value="">—</option>
           <option value="MBB">MBB</option>
           <option value="ex-MBB">ex-MBB</option>
+          <option value="Hi-Po">Hi-Po</option>
         </select>
       </div>
       <div class="field"><label>年齡推估</label><input type="text" id="aAge" placeholder="30"></div>
@@ -476,7 +481,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',
 const CLIENT_ID    = '6490530033-i4ub4ruebe64bihtkaddj6qop4haomhc.apps.googleusercontent.com';
 const SCOPES       = 'https://www.googleapis.com/auth/spreadsheets';
 const DEFAULT_SHEET_ID = '150-ippfOHH1MkWfXgnZhr0kXfEHUKBJO2JV1_SMoxSQ';
-const SHEET_NAMES  = ['TW MBB Pool', 'Overseas MBB Pool'];
+const SHEET_NAMES  = ['TW MBB Pool', 'Overseas MBB Pool', 'Hi-Po Pool'];
 
 const COL = {
   company:1, jobTitle:2, nameCN:3, nameEN:4, age:7,
@@ -654,7 +659,7 @@ async function writeRow(c) {
 // ── POOL ──
 function setPool(pool) {
   currentPool = pool;
-  [['all','tab-all'],['TW MBB Pool','tab-tw'],['Overseas MBB Pool','tab-os']].forEach(([p,id]) => {
+  [['all','tab-all'],['TW MBB Pool','tab-tw'],['Overseas MBB Pool','tab-os'],['Hi-Po Pool','tab-hipo']].forEach(([p,id]) => {
     document.getElementById(id)?.classList.toggle('active', p === pool);
   });
   render();
@@ -730,6 +735,7 @@ function cardHTML(c) {
       ${c.age             ? `<span class="badge b-age">${c.age}y</span>` : ''}
       ${ta==='mbb'        ? `<span class="badge b-mbb">MBB</span>` : ''}
       ${ta==='ex-mbb'     ? `<span class="badge b-exmbb">ex-MBB</span>` : ''}
+      ${ta==='hi-po'      ? `<span class="badge b-hipo">Hi-Po</span>` : ''}
       ${c.pool==='TW MBB Pool' ? `<span class="badge b-tw">TW</span>` : `<span class="badge b-os">海外</span>`}
       ${hasLI             ? `<a class="badge b-li" href="${c.linkedin}" target="_blank">LinkedIn</a>` : ''}
       ${isExS             ? `<span class="badge b-sh">Ex-Shopee</span>` : ''}
